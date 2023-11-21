@@ -1,3 +1,3 @@
-# Spring CRUD
+# Three microservices
 
-Develop a CRUD for Student objects using Postgres and the Spring Boot framework
+Creating three microservices and organizing crud in them
