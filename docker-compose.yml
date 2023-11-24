@@ -1,0 +1,39 @@
+version: '3'
+services:
+  mongodb:
+    image: mongo:latest
+    container_name: mongodb
+    ports:
+      - "27017:27017"
+    volumes:
+      - ./data:/data/db
+
+  middlename-service:
+    build:
+      context: ./middlename
+    container_name: middlename-service
+    ports:
+      - "27019:27019"
+    depends_on:
+      - mongodb
+
+  lastname-service:
+    build:
+      context: ./lastname
+    container_name: lastname-service
+    ports:
+      - "27020:27020"
+    depends_on:
+      - mongodb
+      - middlename-service
+
+  firstname-service:
+    build:
+      context: ./firstname
+    container_name: firstname-service
+    ports:
+      - "27018:27018"
+    depends_on:
+      - mongodb
+      - middlename-service
+      - lastname-service
