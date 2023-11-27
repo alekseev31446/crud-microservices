@@ -1,19 +1,18 @@
 package com.example.lastname.controller;
 
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
-import com.example.lastname.dto.LastNameDto;
+import com.example.lastname.dto.StudentDto;
 import com.example.lastname.service.LastNameService;
-import com.example.lastname.transformer.LastNameDtoTransformer;
-
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -24,19 +23,19 @@ public class LastNameController {
     @Autowired
     private LastNameService lastNameService;
 
-    @PostMapping("/add/{id}")
-    public void create(@PathVariable String id, @RequestParam String lastname) {
-        lastNameService.create(LastNameDtoTransformer.toLastNameDto(id, lastname));
-    }
-
     @GetMapping("/find/{id}")
-    public String getById(@PathVariable String id) {
-        return lastNameService.getById(id).getLastName();
+    public StudentDto getById(@PathVariable String id) {
+        return lastNameService.getById(id);
     }
     
-    @PutMapping("/update/{id}")
-    public void update(@PathVariable String id, @RequestParam String lastname) {
-        lastNameService.update(LastNameDtoTransformer.toLastNameDto(id, lastname));
+    @GetMapping("/find/all")
+    public List<StudentDto> getAll() {
+        return lastNameService.getAll();
+    }
+    
+    @PutMapping("/update/")
+    public void update(@RequestBody StudentDto student) {
+       lastNameService.update(student);
     }
 
     @DeleteMapping("/delete/{id}")

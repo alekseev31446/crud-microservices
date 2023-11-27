@@ -1,10 +1,10 @@
 package com.example.lastname.service;
 
+import java.util.List;
 import org.springframework.stereotype.Service;
-
-import com.example.lastname.dto.LastNameDto;
+import com.example.lastname.dto.StudentDto;
 import com.example.lastname.repository.LastNameRepository;
-
+import com.example.lastname.transformer.StudentDtoTransformer;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
@@ -13,16 +13,16 @@ public class LastNameService {
 
     private final LastNameRepository lastNameRepository;
 
-    public LastNameDto getById(String id) {
-        return lastNameRepository.getById(id);
+    public StudentDto getById(String id) {
+        return StudentDtoTransformer.toStudentDto(id, null, null, lastNameRepository.getById(id));
     }
     
-    public void create(LastNameDto lastname) {
-        lastNameRepository.create(lastname);
+    public List<StudentDto> getAll() {
+        return lastNameRepository.getAll();
     }
-    
-    public void update(LastNameDto lastname) {
-        lastNameRepository.update(lastname);
+
+    public void update(StudentDto student) {
+        lastNameRepository.update(student);
     }
     
     public void delete(String id) {

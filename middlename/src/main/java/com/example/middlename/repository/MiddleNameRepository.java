@@ -2,10 +2,11 @@ package com.example.middlename.repository;
 
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Repository;
-
-import com.example.middlename.dto.MiddleNameDto;
-
+import com.example.middlename.dto.StudentDto;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.core.query.Update;
+import org.springframework.data.mongodb.core.query.Criteria;
 
 @Repository
 @RequiredArgsConstructor
@@ -13,21 +14,14 @@ public class MiddleNameRepository {
 
     private final MongoTemplate mongoTemplate;
 
-    public MiddleNameDto create(MiddleNameDto middleName) {
-        return mongoTemplate.save(middleName);
+    public String getById(String id) {
+        return mongoTemplate.findById(id, StudentDto.class).getMiddlename();
     }
 
-    public MiddleNameDto getById(String id) {
-        return mongoTemplate.findById(id, MiddleNameDto.class);
+    public void update(StudentDto student) {
+        Query query = new Query(Criteria.where("_id").is(student.getId()));
+        Update update = new Update().set("middlename", student.getMiddlename());
+        mongoTemplate.updateFirst(query, update, StudentDto.class);
     }
 
-    public MiddleNameDto update(MiddleNameDto updatedMiddleName) {
-        MiddleNameDto existingMiddleName = mongoTemplate.findById(updatedMiddleName.getId(), MiddleNameDto.class);
-        existingMiddleName.setMiddleName(updatedMiddleName.getMiddleName());
-        return  mongoTemplate.save(existingMiddleName);
-    }
-
-    public void delete(String id) {
-        mongoTemplate.remove(mongoTemplate.findById(id, MiddleNameDto.class));
-    }
 }

@@ -1,13 +1,12 @@
 package com.example.firstname.service;
 
 import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import com.example.firstname.dto.FirstNameDto;
+import com.example.firstname.dto.StudentDto;
+import com.example.firstname.feign.MiddleNameFeignClient;
 import com.example.firstname.repository.FirstNameRepository;
-
+import com.example.firstname.transformer.StudentDtoTransformer;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
@@ -16,24 +15,37 @@ public class FirstNameService {
 
     @Autowired
     private final FirstNameRepository firstNameRepository;
+    
+    @Autowired
+    private MiddleNameFeignClient middleNameFeignClient;
 
-    public List<FirstNameDto> getAll() {
-        return firstNameRepository.getAll();
+    public StudentDto getById(String id) {
+        StudentDto student = middleNameFeignClient.getById(id);
+        student.setFirstname(firstNameRepository.getById(id));
+        return student;
     }
     
-    public FirstNameDto getById(String id) {
-        return firstNameRepository.getById(id);
+    public List<StudentDto> getAll() {
+        List<StudentDto> studentList = middleNameFeignClient.getAll();
+        studentList.forEach(student -> {
+            student.setFirstname(firstNameRepository.getById(student.getId()));
+        });
+        return studentList;
     }
     
-    public FirstNameDto create(FirstNameDto student) {
-        return firstNameRepository.create(student);
+    public void create(StudentDto student) {
+        StudentDto createdStudent = firstNameRepository.create(StudentDtoTransformer.toStudentDto(null, student.getFirstname(), null, null));
+        student.setId(createdStudent.getId());
+        middleNameFeignClient.update(student);
     }
     
-    public FirstNameDto update(FirstNameDto student) {
-        return firstNameRepository.update(student);
+    public StudentDto update(StudentDto student) {
+        firstNameRepository.update(student);
+        middleNameFeignClient.update(student);
+        return student;
     }
     
     public void delete(String id) {
-        firstNameRepository.delete(id);
+        middleNameFeignClient.delete(id);
     }
 }

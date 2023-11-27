@@ -8,15 +8,6 @@ services:
     volumes:
       - ./data:/data/db
 
-  middlename-service:
-    build:
-      context: ./middlename
-    container_name: middlename-service
-    ports:
-      - "27019:27019"
-    depends_on:
-      - mongodb
-
   lastname-service:
     build:
       context: ./lastname
@@ -25,7 +16,16 @@ services:
       - "27020:27020"
     depends_on:
       - mongodb
-      - middlename-service
+      
+  middlename-service:
+    build:
+      context: ./middlename
+    container_name: middlename-service
+    ports:
+      - "27019:27019"
+    depends_on:
+      - mongodb
+      - lastname-service
 
   firstname-service:
     build:
@@ -36,4 +36,3 @@ services:
     depends_on:
       - mongodb
       - middlename-service
-      - lastname-service
