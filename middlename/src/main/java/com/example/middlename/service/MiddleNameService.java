@@ -34,7 +34,9 @@ public class MiddleNameService {
     }
     
     public StudentDto create(StudentDto student) {
-        return middleNameRepository.create(StudentDtoTransformer.toStudentDto(null, null, student.getMiddlename(), null));
+        StudentDto createdStudent = middleNameRepository.create(StudentDtoTransformer.toStudentDto(null, null, student.getMiddlename(), null));
+        createdStudent.setLastname(lastNameFeignClient.update(createdStudent.getId(), student).getLastname());
+        return createdStudent;
     }
     
     public StudentDto update(String id, StudentDto student) {
