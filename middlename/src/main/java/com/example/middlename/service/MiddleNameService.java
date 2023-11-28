@@ -3,6 +3,7 @@ package com.example.middlename.service;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import com.example.middlename.transformer.StudentDtoTransformer;
 import com.example.middlename.dto.StudentDto;
 import com.example.middlename.feign.LastNameFeignClient;
 import com.example.middlename.repository.MiddleNameRepository;
@@ -24,20 +25,25 @@ public class MiddleNameService {
     }
     
     public List<StudentDto> getAll() {
-        List<StudentDto> studentList = lastNameFeignClient.getAll();
+        List<StudentDto> studentList = middleNameRepository.getAll();
         studentList.forEach(student -> {
-            student.setMiddlename(middleNameRepository.getById(student.getId()));
+            student.setLastname(lastNameFeignClient.getById(student.getId()).getLastname());
         });
         
         return studentList;
     }
     
-    public void update(StudentDto student) {
-        middleNameRepository.update(student);
-        lastNameFeignClient.update(student);
+    public StudentDto create(StudentDto student) {
+        return middleNameRepository.create(StudentDtoTransformer.toStudentDto(null, null, student.getMiddlename(), null));
+    }
+    
+    public StudentDto update(String id, StudentDto student) {
+        lastNameFeignClient.update(id, student);
+        
+        return middleNameRepository.update(id, student);
     }
     
     public void delete(String id) {
-        lastNameFeignClient.delete(id);
+        middleNameRepository.delete(id);
     }
 }

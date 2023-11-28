@@ -20,9 +20,13 @@ public class LastNameService {
     public List<StudentDto> getAll() {
         return lastNameRepository.getAll();
     }
+    
+    public StudentDto create(StudentDto student) {
+        return lastNameRepository.create(StudentDtoTransformer.toStudentDto(null, null, null, student.getLastname()));
+    }
 
-    public void update(StudentDto student) {
-        lastNameRepository.update(student);
+    public StudentDto update(String id, StudentDto student) {
+        return lastNameRepository.update(id, student);
     }
     
     public void delete(String id) {

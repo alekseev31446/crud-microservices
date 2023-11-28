@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
+import org.springframework.data.mongodb.core.FindAndModifyOptions;
 
 @RequiredArgsConstructor
 @Repository
@@ -28,13 +29,22 @@ public class LastNameRepository {
                             .map(student -> StudentDtoTransformer.toStudentDto(student.getId(), null, null, student.getLastname()))
                             .collect(Collectors.toList());
     }
+    
+    public StudentDto create(StudentDto student) {
+        return mongoTemplate.save(student);
+    }
 
-    public void update(StudentDto student) {
-        Query query = new Query(Criteria.where("_id").is(student.getId()));
+    public StudentDto update(String id, StudentDto student) {
+        Query query = new Query(Criteria.where("_id").is(id));
         Update update = new Update().set("lastname", student.getLastname());
 
-        mongoTemplate.updateFirst(query, update, StudentDto.class);
+        FindAndModifyOptions options = FindAndModifyOptions.options().returnNew(true);
+        
+        String lastname = mongoTemplate.findAndModify(query, update, options, StudentDto.class).getLastname();
+
+        return StudentDtoTransformer.toStudentDto(id, null, null, lastname);
     }
+
 
     public void delete(String id) {
         mongoTemplate.remove(mongoTemplate.findById(id, StudentDto.class));

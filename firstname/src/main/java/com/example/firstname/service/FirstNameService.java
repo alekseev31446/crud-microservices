@@ -26,9 +26,11 @@ public class FirstNameService {
     }
     
     public List<StudentDto> getAll() {
-        List<StudentDto> studentList = middleNameFeignClient.getAll();
+        List<StudentDto> studentList = firstNameRepository.getAll();
         studentList.forEach(student -> {
-            student.setFirstname(firstNameRepository.getById(student.getId()));
+            StudentDto middlenameStudent = middleNameFeignClient.getById(student.getId());
+            student.setMiddlename(middlenameStudent.getMiddlename());
+            student.setLastname(middlenameStudent.getLastname());
         });
         return studentList;
     }
@@ -36,16 +38,16 @@ public class FirstNameService {
     public void create(StudentDto student) {
         StudentDto createdStudent = firstNameRepository.create(StudentDtoTransformer.toStudentDto(null, student.getFirstname(), null, null));
         student.setId(createdStudent.getId());
-        middleNameFeignClient.update(student);
+        middleNameFeignClient.update(createdStudent.getId(), student);
     }
     
-    public StudentDto update(StudentDto student) {
-        firstNameRepository.update(student);
-        middleNameFeignClient.update(student);
+    public StudentDto update(String id, StudentDto student) {
+        firstNameRepository.update(id, student);
+        middleNameFeignClient.update(id, student);
         return student;
     }
     
     public void delete(String id) {
-        middleNameFeignClient.delete(id);
+        firstNameRepository.delete(id);
     }
 }

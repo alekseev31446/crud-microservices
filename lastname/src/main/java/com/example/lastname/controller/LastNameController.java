@@ -2,6 +2,8 @@ package com.example.lastname.controller;
 
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -33,14 +35,21 @@ public class LastNameController {
         return lastNameService.getAll();
     }
     
-    @PutMapping("/update/")
-    public void update(@RequestBody StudentDto student) {
-       lastNameService.update(student);
+    @PostMapping("/add")
+    public StudentDto create(@RequestBody StudentDto student) {
+        return lastNameService.create(student);
+    }
+    
+    @PutMapping("/update/{id}")
+    public StudentDto update(@PathVariable String id, @RequestBody StudentDto student) {
+       return lastNameService.update(id, student);
     }
 
     @DeleteMapping("/delete/{id}")
-    public void delete(@PathVariable String id) {
+    public ResponseEntity<String> deleteStudent(@PathVariable String id) {
         lastNameService.delete(id);
+
+        return new ResponseEntity<>("Student deleted successfully", HttpStatus.OK);
     }
 
 }

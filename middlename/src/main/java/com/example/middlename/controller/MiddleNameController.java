@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -29,9 +30,14 @@ public class MiddleNameController {
         return middleNameService.getAll();
     }
     
-    @PutMapping("/update/")
-    public void update(@RequestBody StudentDto student) {
-        middleNameService.update(student);
+    @PostMapping("/add")
+    public StudentDto create(@RequestBody StudentDto student) {
+        return middleNameService.create(student);
+    }
+    
+    @PutMapping("/update/{id}")
+    public StudentDto update(@PathVariable String id, @RequestBody StudentDto student) {
+        return middleNameService.update(id, student);
     }
 
     @DeleteMapping("/delete/{id}")

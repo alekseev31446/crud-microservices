@@ -1,6 +1,8 @@
 package com.example.firstname.repository;
 
 import com.example.firstname.dto.StudentDto;
+import com.example.firstname.transformer.StudentDtoTransformer;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -25,11 +27,23 @@ public class FirstNameRepository {
         return mongoTemplate.findById(id, StudentDto.class).getFirstname();
     }
     
-    public void update(StudentDto student) {
-        Query query = new Query(Criteria.where("_id").is(student.getId()));
+    public List<StudentDto> getAll() {
+        Query query = new Query(Criteria.where("_id").exists(true));
+        return mongoTemplate.find(query, StudentDto.class)
+                            .stream()
+                            .map(student -> StudentDtoTransformer.toStudentDto(student.getId(), student.getFirstname(), null, null))
+                            .collect(Collectors.toList());
+    }
+    
+    public void update(String id, StudentDto student) {
+        Query query = new Query(Criteria.where("_id").is(id));
         Update update = new Update().set("firstname", student.getFirstname());
 
         mongoTemplate.updateFirst(query, update, StudentDto.class);
+    }
+    
+    public void delete(String id) {
+        mongoTemplate.remove(mongoTemplate.findById(id, StudentDto.class));
     }
 
 }
