@@ -1,7 +1,6 @@
 package com.example.lastname.repository;
 
 import com.example.lastname.dto.StudentDto;
-import com.example.lastname.transformer.StudentDtoTransformer;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -11,6 +10,8 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.data.mongodb.core.FindAndModifyOptions;
+import static com.example.lastname.transformer.StudentDtoTransformer.toStudentDto;
+
 
 @RequiredArgsConstructor
 @Repository
@@ -18,15 +19,15 @@ public class LastNameRepository {
 
     private final MongoTemplate mongoTemplate;
 
-    public String getById(String id) {
-        return mongoTemplate.findById(id, StudentDto.class).getLastname();
+    public StudentDto getById(String id) {
+        return mongoTemplate.findById(id, StudentDto.class);
     }
     
     public List<StudentDto> getAll() {
         Query query = new Query(Criteria.where("_id").exists(true));
         return mongoTemplate.find(query, StudentDto.class)
                             .stream()
-                            .map(student -> StudentDtoTransformer.toStudentDto(student.getId(), null, null, student.getLastname()))
+                            .map(student -> toStudentDto(student.getId(), student.getLastname()))
                             .collect(Collectors.toList());
     }
     
@@ -34,15 +35,15 @@ public class LastNameRepository {
         return mongoTemplate.save(student);
     }
 
-    public StudentDto update(String id, StudentDto student) {
-        Query query = new Query(Criteria.where("_id").is(id));
+    public StudentDto update(StudentDto student) {
+        Query query = new Query(Criteria.where("_id").is(student.getId()));
         Update update = new Update().set("lastname", student.getLastname());
 
         FindAndModifyOptions options = FindAndModifyOptions.options().returnNew(true);
         
         String lastname = mongoTemplate.findAndModify(query, update, options, StudentDto.class).getLastname();
 
-        return StudentDtoTransformer.toStudentDto(id, null, null, lastname);
+        return toStudentDto(student.getId(), lastname);
     }
 
 

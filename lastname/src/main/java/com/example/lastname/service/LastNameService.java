@@ -4,8 +4,8 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import com.example.lastname.dto.StudentDto;
 import com.example.lastname.repository.LastNameRepository;
-import com.example.lastname.transformer.StudentDtoTransformer;
 import lombok.RequiredArgsConstructor;
+import static com.example.lastname.transformer.StudentDtoTransformer.toStudentDto;
 
 @RequiredArgsConstructor
 @Service
@@ -14,7 +14,7 @@ public class LastNameService {
     private final LastNameRepository lastNameRepository;
 
     public StudentDto getById(String id) {
-        return StudentDtoTransformer.toStudentDto(id, null, null, lastNameRepository.getById(id));
+        return toStudentDto(id, lastNameRepository.getById(id).getLastname());
     }
     
     public List<StudentDto> getAll() {
@@ -22,11 +22,11 @@ public class LastNameService {
     }
     
     public StudentDto create(StudentDto student) {
-        return lastNameRepository.create(StudentDtoTransformer.toStudentDto(null, null, null, student.getLastname()));
+        return lastNameRepository.create(toStudentDto(null, student.getLastname()));
     }
 
-    public StudentDto update(String id, StudentDto student) {
-        return lastNameRepository.update(id, student);
+    public StudentDto update(StudentDto student) {
+        return lastNameRepository.update(student);
     }
     
     public void delete(String id) {

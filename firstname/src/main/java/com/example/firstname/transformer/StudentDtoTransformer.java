@@ -4,13 +4,17 @@ import com.example.firstname.dto.StudentDto;
 
 public class StudentDtoTransformer {
     
-    public static StudentDto toStudentDto(String id, String firstname, String middlename, String lastname) {
+    public static StudentDto toStudentDto(String id, String firstname) {
         return StudentDto.builder()
                 .id(id)
                 .firstname(firstname)
-                .middlename(middlename)
-                .lastname(lastname)
+                .middlename(null)
+                .lastname(null)
                 .build();
+    }
+    
+    public static StudentDto toStudentDto(String id, StudentDto student) {
+        return toStudentDto(id, student.getFirstname());
     }
 
 }

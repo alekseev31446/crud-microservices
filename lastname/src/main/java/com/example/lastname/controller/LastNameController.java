@@ -1,7 +1,6 @@
 package com.example.lastname.controller;
 
 import java.util.List;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -16,14 +15,15 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.lastname.dto.StudentDto;
 import com.example.lastname.service.LastNameService;
 import lombok.RequiredArgsConstructor;
+import static com.example.lastname.transformer.StudentDtoTransformer.toStudentDto;
+
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/lastname")
 public class LastNameController {
 
-    @Autowired
-    private LastNameService lastNameService;
+    private final LastNameService lastNameService;
 
     @GetMapping("/find/{id}")
     public StudentDto getById(@PathVariable String id) {
@@ -42,7 +42,7 @@ public class LastNameController {
     
     @PutMapping("/update/{id}")
     public StudentDto update(@PathVariable String id, @RequestBody StudentDto student) {
-       return lastNameService.update(id, student);
+       return lastNameService.update(toStudentDto(id, student));
     }
 
     @DeleteMapping("/delete/{id}")

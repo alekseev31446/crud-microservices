@@ -5,12 +5,12 @@ import java.util.stream.Collectors;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Repository;
 import com.example.middlename.dto.StudentDto;
-import com.example.middlename.transformer.StudentDtoTransformer;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.FindAndModifyOptions;
+import static com.example.middlename.transformer.StudentDtoTransformer.toStudentDto;
 
 @Repository
 @RequiredArgsConstructor
@@ -22,27 +22,27 @@ public class MiddleNameRepository {
         return mongoTemplate.save(student);
     }
 
-    public String getById(String id) {
-        return mongoTemplate.findById(id, StudentDto.class).getMiddlename();
+    public StudentDto getById(String id) {
+        return mongoTemplate.findById(id, StudentDto.class);
     }
     
     public List<StudentDto> getAll() {
         Query query = new Query(Criteria.where("_id").exists(true));
         return mongoTemplate.find(query, StudentDto.class)
                             .stream()
-                            .map(student -> StudentDtoTransformer.toStudentDto(student.getId(), null, student.getMiddlename(), null))
+                            .map(student -> toStudentDto(student.getId(), student.getMiddlename()))
                             .collect(Collectors.toList());
     }
 
-    public StudentDto update(String id, StudentDto student) {
-        Query query = new Query(Criteria.where("_id").is(id));
+    public StudentDto update(StudentDto student) {
+        Query query = new Query(Criteria.where("_id").is(student.getId()));
         Update update = new Update().set("middlename", student.getMiddlename());
 
         FindAndModifyOptions options = FindAndModifyOptions.options().returnNew(true);
         
         String middlename = mongoTemplate.findAndModify(query, update, options, StudentDto.class).getMiddlename();
 
-        return StudentDtoTransformer.toStudentDto(id, null, middlename, null);
+        return toStudentDto(student.getId(), middlename);
     }
     
     public void delete(String id) {

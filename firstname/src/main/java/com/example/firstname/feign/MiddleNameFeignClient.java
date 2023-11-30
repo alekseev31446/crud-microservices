@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import com.example.firstname.dto.StudentDto;
 
-@FeignClient(name = "middle-name-service")
+@FeignClient(url = "http://localhost:27019", name = "middle-name-service")
 public interface MiddleNameFeignClient {
 
     @GetMapping("/middlename/find/{id}")

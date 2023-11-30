@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import com.example.middlename.dto.StudentDto;
 
-@FeignClient(name = "last-name-service")
+@FeignClient(url = "http://localhost:27020", name = "last-name-service")
 public interface LastNameFeignClient { 
     @GetMapping("/lastname/find/{id}")
     StudentDto getById(@PathVariable String id);

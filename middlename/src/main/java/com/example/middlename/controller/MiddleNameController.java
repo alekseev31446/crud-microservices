@@ -1,7 +1,6 @@
 package com.example.middlename.controller;
 
 import java.util.List;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -12,13 +11,16 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import com.example.middlename.dto.StudentDto;
 import com.example.middlename.service.MiddleNameService;
+import static com.example.middlename.transformer.StudentDtoTransformer.toStudentDto;
+import lombok.RequiredArgsConstructor;
+
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/middlename")
 public class MiddleNameController {
 
-    @Autowired
-    private MiddleNameService middleNameService;
+    private final MiddleNameService middleNameService;
 
     @GetMapping("/find/{id}")
     public StudentDto getById(@PathVariable String id) {
@@ -37,7 +39,7 @@ public class MiddleNameController {
     
     @PutMapping("/update/{id}")
     public StudentDto update(@PathVariable String id, @RequestBody StudentDto student) {
-        return middleNameService.update(id, student);
+        return middleNameService.update(toStudentDto(id, student));
     }
 
     @DeleteMapping("/delete/{id}")

@@ -1,27 +1,24 @@
 package com.example.firstname.service;
 
 import java.util.List;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.example.firstname.dto.StudentDto;
 import com.example.firstname.feign.MiddleNameFeignClient;
 import com.example.firstname.repository.FirstNameRepository;
-import com.example.firstname.transformer.StudentDtoTransformer;
+import static com.example.firstname.transformer.StudentDtoTransformer.toStudentDto;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 @Service
 public class FirstNameService {
 
-    @Autowired
     private final FirstNameRepository firstNameRepository;
     
-    @Autowired
-    private MiddleNameFeignClient middleNameFeignClient;
+    private final MiddleNameFeignClient middleNameFeignClient;
 
     public StudentDto getById(String id) {
         StudentDto student = middleNameFeignClient.getById(id);
-        student.setFirstname(firstNameRepository.getById(id));
+        student.setFirstname(firstNameRepository.getById(id).getFirstname());
         return student;
     }
     
@@ -35,15 +32,16 @@ public class FirstNameService {
         return studentList;
     }
     
-    public void create(StudentDto student) {
-        StudentDto createdStudent = firstNameRepository.create(StudentDtoTransformer.toStudentDto(null, student.getFirstname(), null, null));
+    public StudentDto create(StudentDto student) {
+        StudentDto createdStudent = firstNameRepository.create(toStudentDto(null, student.getFirstname()));
         student.setId(createdStudent.getId());
         middleNameFeignClient.update(createdStudent.getId(), student);
+        return student;
     }
     
-    public StudentDto update(String id, StudentDto student) {
-        firstNameRepository.update(id, student);
-        middleNameFeignClient.update(id, student);
+    public StudentDto update(StudentDto student) {
+        firstNameRepository.update(student);
+        middleNameFeignClient.update(student.getId(), student);
         return student;
     }
     
