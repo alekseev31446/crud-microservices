@@ -1,0 +1,53 @@
+version: '3'
+
+networks:
+  student-network:
+  
+services:
+  mongodb:
+    image: mongo:latest
+    container_name: mongodb
+    ports:
+      - "27017:27017"
+    volumes:
+      - ./data:/data/db
+    networks:
+      - student-network
+
+  lastname-service:
+    build:
+      context: ./lastname
+    container_name: lastname-service
+    ports:
+      - "27020:27020"
+    depends_on:
+      - mongodb
+    networks:
+      - student-network
+      
+  middlename-service:
+    build:
+      context: ./middlename
+    container_name: middlename-service
+    ports:
+      - "27019:27019"
+    depends_on:
+      - mongodb
+      - lastname-service
+    networks:
+      - student-network
+
+  firstname-service:
+    build:
+      context: ./firstname
+    container_name: firstname-service
+    ports:
+      - "27018:27018"
+    depends_on:
+      - mongodb
+      - middlename-service
+    networks:
+      - student-network
+    environment:
+      - SPRING_PROFILES_ACTIVE=container-debug
+    
