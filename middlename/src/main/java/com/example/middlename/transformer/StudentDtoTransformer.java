@@ -12,8 +12,17 @@ public class StudentDtoTransformer {
                 .lastname(null)
                 .build();
     }
+    
+    public static StudentDto toStudentDto(String id, String middlename, String lastname) {
+        return StudentDto.builder()
+                .id(id)
+                .firstname(null)
+                .middlename(middlename)
+                .lastname(lastname)
+                .build();
+    }
 
     public static StudentDto toStudentDto(String id, StudentDto student) {
-        return toStudentDto(id, student.getMiddlename());
+        return toStudentDto(id, student.getMiddlename(), student.getLastname());
     }
 }

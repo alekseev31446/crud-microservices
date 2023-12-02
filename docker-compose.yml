@@ -48,3 +48,6 @@ services:
       - middlename-service
     networks:
       - student-network
+    environment:
+      - SPRING_PROFILES_ACTIVE=container-debug
+    
